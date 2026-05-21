@@ -46,8 +46,6 @@ The system focuses not only on model training, but also on engineering reliable 
 
 # System Architecture
 
-> Add your architecture diagram here
-
 ```text
 MongoDB / CSV Dataset
             ↓
