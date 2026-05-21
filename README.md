@@ -1,6 +1,18 @@
-# Network Security Phishing Detection Pipeline
+# Production-Ready Phishing Detection ML Pipeline
 
-End-to-end ML pipeline for phishing website detection using a structured feature dataset, MongoDB-backed ingestion, scikit-learn preprocessing and training, FastAPI inference, and AWS-oriented packaging.
+A cloud-native machine learning system for phishing website detection using modular ML pipelines, FastAPI inference services, MongoDB ingestion, MLflow experiment tracking, Dockerized deployment, and AWS-oriented infrastructure.
+
+## Key Highlights
+
+- End-to-end ML pipeline architecture
+- MongoDB-backed ingestion pipeline
+- Modular training workflow
+- MLflow + DagsHub experiment tracking
+- FastAPI inference API
+- Dockerized deployment
+- AWS deployment ready
+- Artifact versioning support
+- Schema validation + drift detection
 
 ## Overview
 
