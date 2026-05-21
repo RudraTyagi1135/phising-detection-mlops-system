@@ -1,158 +1,289 @@
-# Production-Ready Phishing Detection ML Pipeline
+# Cloud-Native Phishing Detection MLOps System
 
-A cloud-native machine learning system for phishing website detection using modular ML pipelines, FastAPI inference services, MongoDB ingestion, MLflow experiment tracking, Dockerized deployment, and AWS-oriented infrastructure.
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-green)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange)
+![MLflow](https://img.shields.io/badge/MLflow-ExperimentTracking-purple)
 
-## Key Highlights
+A production-oriented phishing website detection system designed to demonstrate modular ML pipeline engineering, experiment tracking, API-based inference, Dockerized deployment, and AWS-compatible MLOps workflows.
+
+---
+
+# Problem Statement
+
+Phishing websites remain one of the most common cybersecurity threats, exploiting users through deceptive URLs, fake domains, and malicious web structures.
+
+This project was built to explore how production-oriented machine learning systems can be designed for phishing detection using:
+
+- modular ML pipelines
+- schema validation
+- experiment tracking
+- API-based inference
+- cloud-ready deployment workflows
+- artifact versioning and reproducibility
+
+The system focuses not only on model training, but also on engineering reliable ML infrastructure components.
+
+---
+
+# Key Features
 
 - End-to-end ML pipeline architecture
-- MongoDB-backed ingestion pipeline
-- Modular training workflow
+- MongoDB-backed data ingestion
+- Schema-based dataset validation
+- Data drift detection workflow
+- Modular preprocessing pipeline
+- Multiple model training and evaluation
 - MLflow + DagsHub experiment tracking
-- FastAPI inference API
+- FastAPI inference service
 - Dockerized deployment
-- AWS deployment ready
-- Artifact versioning support
-- Schema validation + drift detection
+- AWS deployment workflow support
+- S3 artifact synchronization
+- Modular and scalable project structure
 
-## Overview
+---
 
-This repository implements a modular machine learning workflow for classifying phishing vs. legitimate website records. The project is organized into clear stages:
+# System Architecture
 
-- `data -> validation -> transformation -> training -> serving`
-- raw data can be loaded into MongoDB and exported into the training pipeline
-- trained artifacts are stored locally and can be synced to S3
-- predictions can be served through a FastAPI application
-
-The current implementation is built around a phishing dataset with engineered tabular features such as URL length, HTTPS token usage, page rank, DNS record presence, and related indicators.
-
-## Features
-
-- Modular package structure under `network_security/`
-- MongoDB-based ingestion source
-- Schema-based dataset validation using `data_schema/schema.yaml`
-- Missing-value handling with `KNNImputer`
-- Multiple candidate classifiers with hyperparameter search
-- FastAPI endpoint for training and batch-style CSV prediction
-- HTML table rendering for prediction results
-- Artifact generation for each pipeline run
-- Optional S3 sync for artifacts and final model directory
-- Dockerfile and GitHub Actions workflow for AWS/ECR deployment
-
-## Project Structure
+> Add your architecture diagram here
 
 ```text
-etl_ml_project/
-├── app.py                              # FastAPI app for training + prediction
-├── main.py                             # Standalone local pipeline runner
-├── push_data.py                        # CSV -> MongoDB loader
-├── Dockerfile                          # Container build definition
-├── requirements.txt                    # Python dependencies
-├── setup.py                            # Package setup
-├── data_schema/
-│   └── schema.yaml                     # Expected dataset schema
-├── network_data/
-│   └── phisingData.csv                 # Source dataset sample
-├── final_model/
-│   ├── model.pkl                       # Saved trained model
-│   └── preprocessor.pkl                # Saved preprocessing object
-├── prediction_output/
-│   └── output.csv                      # Last prediction output
-├── templates/
-│   └── table.html                      # Prediction result template
-└── network_security/
-    ├── cloud/                          # S3 sync utility
-    ├── components/                     # Data ingestion/validation/transformation/training
-    ├── constant/                       # Pipeline constants
-    ├── entity/                         # Config and artifact entities
-    ├── exception/                      # Custom exception class
-    ├── logging/                        # Logging setup
-    ├── pipeline/                       # Training pipeline orchestration
-    └── utils/                          # YAML, serialization, metrics, model wrapper
+MongoDB / CSV Dataset
+            ↓
+     Data Ingestion
+            ↓
+     Data Validation
+            ↓
+   Data Transformation
+            ↓
+      Model Training
+            ↓
+ MLflow Experiment Tracking
+            ↓
+      Model Artifacts
+            ↓
+      FastAPI Service
+            ↓
+ Docker Containerization
+            ↓
+ AWS Deployment Pipeline
 ```
 
-## Tech Stack
+---
 
-- Backend: FastAPI, Uvicorn
-- ML: scikit-learn
-- Data: pandas, NumPy, MongoDB
-- Tracking: MLflow, DagsHub
-- Infra target: AWS S3, ECR, EC2
-- Packaging: Docker, setuptools
+# Tech Stack
 
-## Architecture
+| Category | Technologies |
+|---|---|
+| Backend | FastAPI, Uvicorn |
+| Machine Learning | scikit-learn |
+| Data Processing | pandas, NumPy |
+| Database | MongoDB |
+| Experiment Tracking | MLflow, DagsHub |
+| Cloud Services | AWS S3, AWS ECR, EC2 |
+| Deployment | Docker, GitHub Actions |
+| Packaging | setuptools |
 
-### 1. Data Ingestion
+---
 
-`network_security/components/data_ingestion.py`
+# Engineering Highlights
 
-- connects to MongoDB using `MONGO_DB_URL`
-- reads the configured collection
-- removes MongoDB `_id`
-- stores a feature-store CSV snapshot
-- splits the dataset into train and test CSV files
+- Modular ML pipeline design
+- Schema-driven validation workflow
+- Drift detection support
+- Reusable preprocessing pipeline
+- Experiment tracking integration
+- Dockerized inference service
+- Cloud-compatible artifact management
+- Separation of training and serving workflows
+- Reproducible pipeline execution
 
-### 2. Data Validation
+---
 
-`network_security/components/data_validation.py`
+# Pipeline Workflow
 
-- validates dataset column count against `data_schema/schema.yaml`
-- compares train vs. test distributions for drift detection
-- writes a drift report as YAML
-- writes validated datasets to the validation artifact directory
+## 1. Data Ingestion
 
-### 3. Data Transformation
+Location:
 
-`network_security/components/data_transformation.py`
+```text
+network_security/components/data_ingestion.py
+```
 
-- separates features and target
-- normalizes target label `-1 -> 0`
-- applies a `KNNImputer` preprocessing pipeline
-- saves transformed NumPy arrays
-- saves the fitted preprocessing object
+Responsibilities:
 
-### 4. Model Training
+- Connects to MongoDB
+- Reads configured collections
+- Removes MongoDB `_id`
+- Creates feature-store snapshots
+- Splits train and test datasets
 
-`network_security/components/model_trainer.py`
+---
 
-- trains several candidate estimators:
-  - Random Forest
-  - Decision Tree
-  - Gradient Boosting
-  - Logistic Regression
-  - AdaBoost
-- performs hyperparameter search
-- computes classification metrics
-- stores the selected model artifact
-- logs metrics to MLflow/DagsHub
+## 2. Data Validation
 
-### 5. Model Serving
+Location:
 
-`app.py`
+```text
+network_security/components/data_validation.py
+```
 
-- `GET /` redirects to Swagger UI
-- `GET /train` triggers the training pipeline
-- `POST /predict` accepts a CSV file, loads saved artifacts, generates predictions, writes `prediction_output/output.csv`, and renders an HTML table
+Responsibilities:
 
-## Configuration
+- Validates dataset schema
+- Detects train/test drift
+- Generates validation reports
+- Stores validated artifacts
 
-The current codebase uses:
+---
 
-- environment variables for secrets and connection details
-- constants from `network_security/constant/training_pipeline/__init__.py`
-- schema from `data_schema/schema.yaml`
+## 3. Data Transformation
 
-### Required Environment Variables
+Location:
 
-Create a `.env` file in the project root:
+```text
+network_security/components/data_transformation.py
+```
+
+Responsibilities:
+
+- Feature-target separation
+- Missing value handling using `KNNImputer`
+- Target normalization
+- Transformation artifact generation
+- Preprocessor serialization
+
+---
+
+## 4. Model Training
+
+Location:
+
+```text
+network_security/components/model_trainer.py
+```
+
+Models Evaluated:
+
+- Random Forest
+- Decision Tree
+- Gradient Boosting
+- Logistic Regression
+- AdaBoost
+
+Responsibilities:
+
+- Hyperparameter tuning
+- Model evaluation
+- Metric logging
+- MLflow experiment tracking
+- Model artifact generation
+
+---
+
+## 5. Model Serving
+
+Location:
+
+```text
+app.py
+```
+
+API Endpoints:
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/` | GET | Redirects to Swagger UI |
+| `/train` | GET | Triggers training pipeline |
+| `/predict` | POST | Performs batch CSV inference |
+
+The inference pipeline:
+
+- loads serialized preprocessing artifacts
+- loads trained model artifacts
+- generates predictions
+- exports prediction outputs
+- renders HTML prediction tables
+
+---
+
+# Repository Structure
+
+```text
+phishing-detection-mlops-system/
+│
+├── app.py
+├── main.py
+├── push_data.py
+├── Dockerfile
+├── requirements.txt
+├── setup.py
+│
+├── data_schema/
+│   └── schema.yaml
+│
+├── network_data/
+│   └── phisingData.csv
+│
+├── templates/
+│   └── table.html
+│
+├── network_security/
+│   ├── cloud/
+│   ├── components/
+│   ├── constant/
+│   ├── entity/
+│   ├── exception/
+│   ├── logging/
+│   ├── pipeline/
+│   └── utils/
+│
+└── .github/
+    └── workflows/
+```
+
+---
+
+# Model Performance
+
+> Replace with your actual metrics
+
+| Metric | Score |
+|---|---|
+| Accuracy | XX% |
+| Precision | XX% |
+| Recall | XX% |
+| F1 Score | XX% |
+
+Best Performing Model: `Gradient Boosting`
+
+---
+
+# Configuration
+
+The project currently uses:
+
+- environment variables
+- schema-driven validation
+- pipeline constants
+- AWS deployment configuration
+
+---
+
+# Environment Variables
+
+Create a `.env` file:
 
 ```env
 MONGO_DB_URL=<your-mongodb-connection-string>
-AWS_ACCESS_KEY_ID=<your-aws-access-key>
-AWS_SECRET_ACCESS_KEY=<your-aws-secret-key>
+
+AWS_ACCESS_KEY_ID=<your-access-key>
+AWS_SECRET_ACCESS_KEY=<your-secret-key>
 AWS_REGION=us-east-1
 ```
 
-If you use GitHub Actions deployment, also configure these repository secrets:
+For GitHub Actions deployment:
 
 ```env
 AWS_ACCESS_KEY_ID
@@ -162,194 +293,247 @@ AWS_ECR_LOGIN_URI
 ECR_REPOSITORY_NAME
 ```
 
-## Installation
+---
 
-### 1. Clone the repository
+# Local Setup
+
+## Clone Repository
 
 ```bash
-git clone <your-repo-url>
-cd etl_ml_project
+git clone <your-repository-url>
+cd phishing-detection-mlops-system
 ```
 
-### 2. Create and activate a virtual environment
+---
 
-Windows PowerShell:
+## Create Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+Activate environment:
+
+### Windows
 
 ```powershell
-python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Linux/macOS:
+### Linux/macOS
 
 ```bash
-python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+---
+
+## Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-## Data Loading
+---
 
-If your MongoDB collection is empty, populate it from the bundled CSV:
+# Data Loading
+
+Populate MongoDB from the provided dataset:
 
 ```bash
 python push_data.py
 ```
 
-This loads `network_data/phisingData.csv` into:
+Dataset Source:
 
-- database: `RUDRA1`
-- collection: `Network_data`
+```text
+network_data/phisingData.csv
+```
 
-## Running the Project
+MongoDB Target:
 
-### Option 1: Run the training pipeline directly
+- Database: `RUDRA1`
+- Collection: `Network_data`
+
+---
+
+# Running the Training Pipeline
 
 ```bash
 python main.py
 ```
 
-This runs:
+Pipeline stages executed:
 
-- data ingestion
-- data validation
-- data transformation
-- model training
+- Data Ingestion
+- Data Validation
+- Data Transformation
+- Model Training
 
-Artifacts are written under the timestamped `Artifacts/` directory.
+Generated artifacts are stored in:
 
-### Option 2: Run the FastAPI app
+```text
+Artifacts/
+```
+
+---
+
+# Running the FastAPI Service
 
 ```bash
 uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Open:
+Swagger Documentation:
 
-- Swagger UI: `http://localhost:8000/docs`
+```text
+http://localhost:8000/docs
+```
 
-### Trigger training via API
+---
+
+# API Usage
+
+## Trigger Training
 
 ```http
 GET /train
 ```
 
-### Run prediction via API
+---
+
+## Batch Prediction
 
 ```http
 POST /predict
 Content-Type: multipart/form-data
-file=<csv file>
 ```
 
-The API:
+Upload a CSV file for prediction inference.
 
-- loads `final_model/preprocessor.pkl`
-- loads `final_model/model.pkl`
-- appends predictions to the uploaded dataset
-- writes `prediction_output/output.csv`
-- returns an HTML table response
+Prediction outputs are exported to:
 
-## AWS and Deployment
+```text
+prediction_output/output.csv
+```
 
-### Docker
+---
 
-Build the image:
+# Docker Deployment
+
+## Build Docker Image
 
 ```bash
-docker build -t network-security .
+docker build -t phishing-detection-system .
 ```
 
-Run the container:
+---
+
+## Run Docker Container
 
 ```bash
-docker run --env-file .env -p 8000:8000 network-security
+docker run --env-file .env -p 8000:8000 phishing-detection-system
 ```
 
-### GitHub Actions
+---
 
-The repository includes `.github/workflows/main.yml` that:
+# AWS Deployment Workflow
 
-- runs a placeholder CI stage
-- builds and pushes a Docker image to Amazon ECR
-- deploys on a self-hosted runner
+The repository includes GitHub Actions workflows for:
 
-### S3 Artifact Sync
+- Docker image build
+- Amazon ECR push
+- AWS deployment automation
 
-The training pipeline can sync:
+AWS Services Used:
 
-- pipeline artifacts to `s3://<bucket>/artifact/<timestamp>`
-- final model directory to `s3://<bucket>/final_model/<timestamp>`
+- Amazon ECR
+- Amazon S3
+- Amazon EC2
 
-Bucket name is currently defined in:
+---
 
-- `network_security/constant/training_pipeline/__init__.py`
+# Artifact Management
 
-## Schema
+The pipeline supports optional S3 synchronization for:
 
-The expected dataset schema is defined in:
+- training artifacts
+- final trained models
+- pipeline outputs
 
-- `data_schema/schema.yaml`
+Example structure:
 
-The target column is:
+```text
+s3://bucket-name/artifacts/<timestamp>
+s3://bucket-name/final_model/<timestamp>
+```
 
-- `Result`
+---
 
-Feature values are currently integer-encoded based on the phishing dataset used by the project.
+# Logging
 
-## Logging
-
-Logs are written to:
+Logs are generated under:
 
 ```text
 logs/<timestamp>.log
 ```
 
-The custom exception and logger utilities are located in:
+Custom logging and exception handling utilities:
 
-- `network_security/exception/exception.py`
-- `network_security/logging/logger.py`
+```text
+network_security/logging/logger.py
+network_security/exception/exception.py
+```
 
-## Testing
+---
 
-Current repository test files are lightweight connectivity scripts:
+# Current Limitations
 
-- `test_fetch_data.py`
-- `test_mongodb.py`
+This repository is currently evolving toward a more production-grade MLOps architecture.
 
-They are not a full automated test suite yet. Before production use, add:
+Known gaps include:
 
-- unit tests for each pipeline component
-- API tests for `/train` and `/predict`
-- regression tests for saved model compatibility
+- centralized configuration management
+- automated CI quality checks
+- complete pytest coverage
+- model registry integration
+- monitoring and observability
+- append-only prediction audit logging
 
-## Known Gaps
+---
 
-These are important if you plan to productionize the repository:
+# Future Improvements
 
-- runtime configuration is split across constants and env vars instead of a centralized `config.yaml`
-- prediction logging is currently a local CSV overwrite, not an append-only audit log
-- CI steps are placeholders and do not run real linting or tests
-- deployment settings should be reviewed to keep API port, Docker command, and runtime entrypoint aligned
-- secrets must never be hardcoded in utility or test files
+Planned enhancements:
 
-## Suggested Next Improvements
+- Kubernetes deployment
+- Terraform infrastructure provisioning
+- centralized config management
+- model registry integration
+- monitoring dashboards
+- CI/CD quality gates
+- real-time inference pipeline
+- structured prediction logging
+- advanced testing coverage
 
-- introduce a real `config.yaml` and config loader
-- add structured prediction logging to a database or S3
-- replace `os.system` AWS sync calls with `subprocess` plus error handling
-- add Pydantic request/response contracts for inference
-- add proper pytest coverage
-- make Docker start the FastAPI app explicitly
-- add model registry/versioning around `final_model/`
+---
 
-## Author
+# Repository Status
+
+Current Status: Active Development
+
+This repository is continuously being improved to better reflect production-oriented ML systems engineering practices.
+
+---
+
+# Maintainer
 
 Rudra Tyagi
 
+Focus Areas:
+
+- AWS ML Engineering
+- MLOps Systems
+- Cloud-Native ML Infrastructure
+- Machine Learning Deployment
