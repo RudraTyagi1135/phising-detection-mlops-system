@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard AI | Enterprise URL Threat Intelligence Platform</title>
+
+
+<link rel="stylesheet" href="/static/css/style.css">
+
+
+</head>
+
+<body>
+
+
+<nav class="navbar">
+
+    <div class="logo">
+        PhishGuard AI
+    </div>
+
+    <div class="nav-links">
+        <a href="/docs" class="nav-btn">
+            API Docs
+        </a>
+    </div>
+
+</nav>
+
+<section class="hero">
+
+    <span class="hero-badge">
+        Enterprise Cybersecurity Platform
+    </span>
+
+    <h1>
+        Detect Phishing Threats Using Machine Learning
+    </h1>
+
+    <p>
+        Upload suspicious URL datasets and automatically classify phishing
+        and legitimate URLs using a production-grade machine learning
+        pipeline with monitoring, audit logging, model tracking and
+        version control.
+    </p>
+
+    <div class="hero-actions">
+
+        <form
+            action="/predict"
+            method="post"
+            enctype="multipart/form-data"
+            onsubmit="showLoader()">
+
+            <input
+                type="file"
+                name="file"
+                accept=".csv"
+                required>
+
+            <button type="submit">
+                Analyze Dataset
+            </button>
+
+        </form>
+
+    </div>
+
+    <div id="loader" class="loader-container">
+
+        <div class="spinner"></div>
+
+        <p>
+            Running phishing risk assessment...
+        </p>
+
+    </div>
+
+</section>
+
+<section class="stats">
+
+    <div class="stat-card">
+        <h2>11K+</h2>
+        <p>URLs Evaluated</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>30</h2>
+        <p>Security Signals</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>MongoDB</h2>
+        <p>Audit Logging</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>MLflow</h2>
+        <p>Experiment Tracking</p>
+    </div>
+
+</section>
+
+<section class="architecture">
+
+    <h2>Analysis Workflow</h2>
+
+    <div class="workflow">
+
+        <div class="workflow-card">
+            Upload Dataset
+        </div>
+
+        <div class="workflow-arrow">
+            →
+        </div>
+
+        <div class="workflow-card">
+            ML Inference
+        </div>
+
+        <div class="workflow-arrow">
+            →
+        </div>
+
+        <div class="workflow-card">
+            Threat Detection
+        </div>
+
+        <div class="workflow-arrow">
+            →
+        </div>
+
+        <div class="workflow-card">
+            MongoDB Logging
+        </div>
+
+        <div class="workflow-arrow">
+            →
+        </div>
+
+        <div class="workflow-card">
+            CSV Export
+        </div>
+
+    </div>
+
+</section>
+
+<section class="features">
+
+    <div class="feature-card">
+        <h3>Batch URL Classification</h3>
+        <p>
+            Analyze large datasets containing suspicious URLs and identify
+            phishing threats in seconds.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h3>Security Audit Trail</h3>
+        <p>
+            Every prediction request is logged in MongoDB Atlas for
+            monitoring and traceability.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <h3>MLOps Pipeline</h3>
+        <p>
+            Integrated with MLflow, DVC, DagsHub, Docker and GitHub Actions.
+        </p>
+    </div>
+
+</section>
+
+<section class="tech-stack">
+
+    <h2>Technology Stack</h2>
+
+    <div class="stack-grid">
+
+        <span>FastAPI</span>
+        <span>MongoDB Atlas</span>
+        <span>MLflow</span>
+        <span>DVC</span>
+        <span>DagsHub</span>
+        <span>Docker</span>
+        <span>AWS</span>
+        <span>GitHub Actions</span>
+
+    </div>
+
+</section>
+```
+
+</body>
+
+<script src="/static/js/app.js"></script>
+
+</html>

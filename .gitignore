@@ -37,3 +37,6 @@ final_model/*.pkl
 
 .DS_Store
 Thumbs.db
+
+mlflow.db
+*.tar

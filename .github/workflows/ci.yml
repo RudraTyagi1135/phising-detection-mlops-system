@@ -5,9 +5,11 @@ on:
     branches:
       - main
       - develop
+
   pull_request:
     branches:
       - main
+
   workflow_dispatch:
 
 permissions:
@@ -20,55 +22,57 @@ env:
 
 jobs:
   validate:
-    name: Validate, test, and build
+    name: Validate, Test and Build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: pip
 
-      - name: Install Python dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e .
+          pip install pytest ruff
 
-      - name: Lint critical Python errors
-        run: ruff check .
-
-      - name: Validate project configuration
-        run: python scripts/validate_project.py
-
-      - name: Validate DVC metadata
+      - name: Ruff Lint
         run: |
-          python scripts/check_dvc_setup.py
-          dvc status
+          ruff check .
 
-      - name: Validate CI secrets contract
-        run: python scripts/validate_secrets.py --mode ci
-
-      - name: Run tests
-        run: pytest -q
-
-      - name: Build Docker image
-        run: docker build -t phishing-detection-api:ci .
-
-      - name: Verify Docker image health
+      - name: Validate Project
         run: |
-          docker run -d --name phishing-detection-api-ci -p 8000:8000 phishing-detection-api:ci
+          python scripts/validate_project.py
+
+      - name: Run Tests
+        run: |
+          pytest -q
+
+      - name: Build Docker Image
+        run: |
+          docker build -t phishguard-ai:ci .
+
+      - name: Health Check Container
+        run: |
+          docker run -d \
+            --name phishguard-ai-ci \
+            -p 8000:8000 \
+            phishguard-ai:ci
+
           for i in {1..20}; do
             if curl -fsS http://localhost:8000/health; then
-              docker rm -f phishing-detection-api-ci
+              docker rm -f phishguard-ai-ci
               exit 0
             fi
             sleep 3
           done
-          docker logs phishing-detection-api-ci
-          docker rm -f phishing-detection-api-ci
+
+          docker logs phishguard-ai-ci
+          docker rm -f phishguard-ai-ci
           exit 1

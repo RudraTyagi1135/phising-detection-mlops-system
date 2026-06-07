@@ -20,9 +20,9 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY app.py main.py push_data.py config.yaml ./
 COPY data_schema ./data_schema
-COPY templates ./templates
+COPY frontend ./frontend
 COPY final_model ./final_model
-COPY network_data ./network_data
+
 
 RUN useradd --create-home --shell /usr/sbin/nologin appuser \
     && mkdir -p logs prediction_output Artifacts \

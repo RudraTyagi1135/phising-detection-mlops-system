@@ -11,22 +11,10 @@ services:
       - ./logs:/app/logs
       - ./prediction_output:/app/prediction_output
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 30s
 
-  trainer:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    command: ["python", "main.py"]
-    profiles:
-      - train
-    volumes:
-      - ./logs:/app/logs
-      - ./Artifacts:/app/Artifacts
-      - ./final_model:/app/final_model
+  

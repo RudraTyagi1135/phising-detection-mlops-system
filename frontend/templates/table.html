@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Prediction Results</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Prediction Results
+        </div>
+
+        <a href="/" class="nav-btn">
+            New Analysis
+        </a>
+
+    </nav>
+
+    <div class="container">
+
+        <h1>Dataset Analysis Completed</h1>
+
+        {% if request_id %}
+        <div class="request-id">
+            Request ID: {{ request_id }}
+        </div>
+        {% endif %}
+
+        <div class="metrics-grid">
+
+            <div class="metric-card">
+                <h3>Total Records</h3>
+                <p>{{ total_rows }}</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>Phishing URLs</h3>
+                <p>{{ phishing_count }}</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>Legitimate URLs</h3>
+                <p>{{ safe_count }}</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>Risk Rate</h3>
+                <p>{{ risk_percentage }}%</p>
+            </div>
+
+        </div>
+
+        <div class="table-card">
+
+            <h2>
+                Preview (First 50 Records)
+            </h2>
+
+            {{ table | safe }}
+
+        </div>
+
+        <div class="download-section">
+
+            <a href="/download" class="download-btn">
+
+                Download Results CSV
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

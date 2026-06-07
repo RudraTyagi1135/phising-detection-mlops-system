@@ -20,3 +20,9 @@ mlruns
 *.egg-info
 prediction_output/*.csv
 valid_data/*.csv
+.vscode
+demo_data
+docs
+tests
+scripts
+mlflow.db

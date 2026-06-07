@@ -3,7 +3,8 @@ import sys
 import pandas as pd
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import Response , FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 from uvicorn import run as app_run
@@ -18,8 +19,15 @@ from network_security.utils.main_utils.utils import load_object
 from network_security.utils.ml_utils.model.estimator import NetworkModel
 
 
+
+
 settings = get_settings()
 app = FastAPI(title=settings.app.name)
+app.mount(
+    "/static",
+    StaticFiles(directory="frontend/static"),
+    name="static",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,13 +37,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory=str(settings.paths.templates_dir))
+templates = Jinja2Templates(directory="frontend/templates")
 prediction_logger = PredictionLogger()
 
 
 @app.get("/", tags=["system"])
-async def index():
-    return RedirectResponse(url="/docs")
+async def index(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={}
+    )
 
 
 @app.get("/health", tags=["system"])
@@ -86,14 +99,45 @@ async def predict_route(request: Request, file: UploadFile = File(...)):
         request_id = prediction_logger.log_batch(features=features, predictions=y_pred, source="api")
         logging.info("Prediction request completed with request_id=%s", request_id)
 
-        table_html = output_dataframe.to_html(classes="table table-striped", index=False)
+        preview_df = output_dataframe.head(50)
+
+        table_html = preview_df.to_html(
+            classes="table",
+            index=False
+        )
+
+        phishing_count = int((y_pred == 1).sum())
+
+        safe_count = len(y_pred) - phishing_count
+
+        risk_percentage = round(
+            phishing_count * 100 / len(y_pred),
+            2
+        )
+
         return templates.TemplateResponse(
-            "table.html",
-            {"request": request, "table": table_html, "request_id": request_id},
+            request=request,
+            name="table.html",
+            context={
+                "table": table_html,
+                "request_id": request_id,
+                "total_rows": len(output_dataframe),
+                "phishing_count": phishing_count,
+                "safe_count": safe_count,
+                "risk_percentage": risk_percentage,
+            },
         )
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
+    
+@app.get("/download")
+async def download_results():
+
+    return FileResponse(
+        settings.paths.prediction_output_file_path,
+        filename="prediction_results.csv",
+    )
 
 
 if __name__ == "__main__":
