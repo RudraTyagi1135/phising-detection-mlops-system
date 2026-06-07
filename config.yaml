@@ -14,7 +14,8 @@ paths:
   saved_model_dir: saved_models
   prediction_output_dir: prediction_output
   prediction_output_file_name: output.csv
-  templates_dir: templates
+  templates_dir: frontend/templates
+  static_dir: frontend/static
   schema_file_path: data_schema/schema.yaml
   local_dataset_path: network_data/phisingData.csv
   log_dir: logs

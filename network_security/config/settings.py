@@ -106,6 +106,7 @@ class PathSettings:
     prediction_output_dir: Path
     prediction_output_file_name: str
     templates_dir: Path
+    static_dir: Path
     schema_file_path: Path
     local_dataset_path: Path
     log_dir: Path
