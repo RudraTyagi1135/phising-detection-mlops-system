@@ -50,7 +50,9 @@ jobs:
         run: |
           python scripts/validate_project.py
 
-      - name: Run Tests
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest -q
 
