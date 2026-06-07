@@ -203,6 +203,7 @@ class Settings:
     dvc: DVCSettings
     aws: AWSSettings
     log_level: str
+    
 
 
 @lru_cache(maxsize=1)
@@ -237,7 +238,7 @@ def get_settings() -> Settings:
         prediction_output_file_name=str(
             _get(config, "paths.prediction_output_file_name", "output.csv")
         ),
-        templates_dir=_resolve_path(_get(config, "paths.templates_dir", "templates")),
+        templates_dir=_resolve_path(_get(config, "paths.templates_dir", "frontend/templates")),
         static_dir=_resolve_path(
         _get(config, "paths.static_dir", "frontend/static")
         ),

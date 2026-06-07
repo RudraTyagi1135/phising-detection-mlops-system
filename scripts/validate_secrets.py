@@ -10,19 +10,8 @@ CI_REQUIRED = [
 ]
 
 CD_REQUIRED = [
-    "AWS_REGION",
-    "ECR_REPOSITORY_NAME",
-    "ECS_CLUSTER",
-    "ECS_SERVICE",
-    "ECS_TASK_DEFINITION_FAMILY",
-    "ECS_CONTAINER_NAME",
-    "ECS_EXECUTION_ROLE_ARN",
-    "ECS_TASK_ROLE_ARN",
-    "MONGODB_URI_SECRET_ARN",
-    "DAGSHUB_TOKEN_SECRET_ARN",
-    "DAGSHUB_REPO_OWNER",
-    "DAGSHUB_REPO_NAME",
-    "DVC_REMOTE_URL",
+    "DOCKER_USERNAME",
+    "DOCKER_PASSWORD"
 ]
 
 
@@ -38,18 +27,6 @@ def main() -> int:
     required = CI_REQUIRED if args.mode == "ci" else CD_REQUIRED
     missing = [name for name in required if not _present(name)]
 
-    if args.mode == "cd":
-        has_aws_auth = _present("AWS_ROLE_TO_ASSUME") or (
-            _present("AWS_ACCESS_KEY_ID") and _present("AWS_SECRET_ACCESS_KEY")
-        )
-        has_dagshub_auth = _present("DAGSHUB_TOKEN") or (
-            _present("MLFLOW_TRACKING_USERNAME") and _present("MLFLOW_TRACKING_PASSWORD")
-        )
-
-        if not has_aws_auth:
-            missing.append("AWS_ROLE_TO_ASSUME or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY")
-        if not has_dagshub_auth:
-            missing.append("DAGSHUB_TOKEN or MLFLOW_TRACKING_USERNAME/MLFLOW_TRACKING_PASSWORD")
 
     if missing:
         message = "Missing required secrets/env vars: " + ", ".join(sorted(set(missing)))

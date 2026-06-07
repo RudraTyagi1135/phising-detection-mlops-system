@@ -25,8 +25,14 @@ settings = get_settings()
 app = FastAPI(title=settings.app.name)
 app.mount(
     "/static",
-    StaticFiles(directory="frontend/static"),
+    StaticFiles(
+        directory=settings.paths.static_dir
+    ),
     name="static",
+)
+
+templates = Jinja2Templates(
+    directory=settings.paths.templates_dir
 )
 
 app.add_middleware(
@@ -37,7 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory="frontend/templates")
+
 prediction_logger = PredictionLogger()
 
 

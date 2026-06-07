@@ -46,6 +46,7 @@ def main() -> int:
 
     # Validate required project paths
     required_paths = [
+        settings.config_path,
         settings.paths.schema_file_path,
         settings.paths.templates_dir,
         settings.config_path,
