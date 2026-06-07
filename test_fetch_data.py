@@ -1,10 +1,7 @@
-import pymongo
-from dotenv import load_dotenv
-import os
+from push_data import NetworkDataExtract
 
-load_dotenv()
-MONGO_DB_URL = os.getenv("MONGO_DB_URL")
-client = pymongo.MongoClient(MONGO_DB_URL)
-db = client["RUDRA1"]
-collection = db["Network_data"]
-print(collection.count_documents({}))  # Should print 11055
+
+def test_csv_to_json_converter_reads_seed_dataset():
+    records = NetworkDataExtract().csv_to_json_converter("network_data/phisingData.csv")
+    assert records
+    assert "Result" in records[0]

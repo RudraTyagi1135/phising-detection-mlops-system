@@ -1,272 +1,126 @@
-# ================================
-# 📦 Imports
-# ================================
-from datetime import datetime  # For generating timestamps for artifact folders
-import os                     # For directory and path operations
-from network_security.constant import training_pipeline  # Import your constants file
+from __future__ import annotations
+
+import os
+from datetime import datetime
+
+from network_security.constant import training_pipeline
 
 
-# ================================
-# ⚙️ Training Pipeline Configuration
-# ================================
 class TrainingPipelineConfig:
-    """
-    Configuration for the overall ML training pipeline.
-
-    Responsibilities:
-    - Store the pipeline name and artifact root directory.
-    - Generate timestamped directories for each pipeline run to ensure reproducibility.
-
-    Attributes:
-    ----------
-    pipeline_name : str
-        Name of the pipeline (used in logging, artifact naming).
-    artifact_name : str
-        Root folder name for all artifacts.
-    artifact_dir : str
-        Full path to the artifact folder for this run.
-    timestamp : str
-        Timestamp string used for folder naming and logging.
-    """
-
-    def __init__(self, timestamp: datetime = datetime.now()):
-        # Convert timestamp to string format suitable for folder names
+    def __init__(self, timestamp: datetime | None = None):
+        timestamp = timestamp or datetime.now()
         timestamp_str = timestamp.strftime("%d_%m_%Y_%H_%M_%S")
 
-        # Pipeline name from constants
         self.pipeline_name: str = training_pipeline.PIPELINE_NAME
-
-        # Root artifact folder from constants
         self.artifact_name: str = training_pipeline.ARTIFACT_DIR
-
-        # Full artifact directory path for this pipeline run
         self.artifact_dir: str = os.path.join(self.artifact_name, timestamp_str)
-
-        self.model_dir=os.path.join("final_model")
-
-        # Timestamp string for logging, reports, and model versioning
+        self.model_dir: str = training_pipeline.FINAL_MODEL_DIR
         self.timestamp: str = timestamp_str
 
 
-# ================================
-# ⚙️ Data Ingestion Configuration
-# ================================
 class DataIngestionConfig:
-    """
-    Configuration for the Data Ingestion stage.
-
-    Responsibilities:
-    - Define paths for raw, training, and testing datasets.
-    - Provide MongoDB collection and database names.
-    - Maintain a train/test split ratio for reproducibility.
-
-    Attributes:
-    ----------
-    data_ingestion_dir : str
-        Base directory for ingestion artifacts.
-    feature_store_file_path : str
-        Path to save raw dataset snapshot.
-    training_file_path : str
-        Path to save split training dataset.
-    testing_file_path : str
-        Path to save split testing dataset.
-    train_test_split_ratio : float
-        Ratio for train/test split.
-    collection_name : str
-        MongoDB collection name for raw data.
-    database_name : str
-        MongoDB database name.
-    """
-
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
-        # Base directory for data ingestion artifacts
         self.data_ingestion_dir: str = os.path.join(
             training_pipeline_config.artifact_dir,
-            training_pipeline.DATA_INGESTION_DIR_NAME
+            training_pipeline.DATA_INGESTION_DIR_NAME,
         )
-
-        # Path to save raw feature store (original dataset)
         self.feature_store_file_path: str = os.path.join(
             self.data_ingestion_dir,
             training_pipeline.DATA_INGESTION_FEATURE_STORE_DIR,
-            training_pipeline.FILE_NAME
+            training_pipeline.FILE_NAME,
         )
-
-        # Paths for train/test split files
         self.training_file_path: str = os.path.join(
             self.data_ingestion_dir,
             training_pipeline.DATA_INGESTION_INGESTED_DIR,
-            training_pipeline.TRAIN_FILE_NAME
+            training_pipeline.TRAIN_FILE_NAME,
         )
         self.testing_file_path: str = os.path.join(
             self.data_ingestion_dir,
             training_pipeline.DATA_INGESTION_INGESTED_DIR,
-            training_pipeline.TEST_FILE_NAME
+            training_pipeline.TEST_FILE_NAME,
         )
-
-        # Train/test split ratio
-        self.train_test_split_ratio: float = training_pipeline.DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO
-
-        # MongoDB settings
+        self.train_test_split_ratio: float = (
+            training_pipeline.DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO
+        )
+        self.random_state: int = training_pipeline.DATA_INGESTION_RANDOM_STATE
+        self.source: str = training_pipeline.DATA_INGESTION_SOURCE
+        self.local_data_file_path: str = training_pipeline.DATA_INGESTION_LOCAL_DATA_FILE_PATH
         self.collection_name: str = training_pipeline.DATA_INGESTION_COLLECTION_NAME
         self.database_name: str = training_pipeline.DATA_INGESTION_DATABASE_NAME
 
 
-# ================================
-# ⚙️ Data Validation Configuration
-# ================================
 class DataValidationConfig:
-    """
-    Configuration for the Data Validation stage.
-
-    Responsibilities:
-    - Define directories and file paths for validated and invalid data.
-    - Define path for the data drift report.
-
-    Attributes:
-    ----------
-    data_validation_dir : str
-        Root folder for data validation artifacts.
-    valid_data_dir : str
-        Folder for storing valid train/test datasets.
-    invalid_data_dir : str
-        Folder for storing invalid/rejected train/test datasets.
-    valid_train_file_path : str
-        Path to save validated training dataset.
-    valid_test_file_path : str
-        Path to save validated testing dataset.
-    invalid_train_file_path : str
-        Path to save invalid training dataset.
-    invalid_test_file_path : str
-        Path to save invalid testing dataset.
-    drift_report_file_path : str
-        Path to save dataset drift report.
-    """
-
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
-        # Root folder for all data validation artifacts
         self.data_validation_dir: str = os.path.join(
             training_pipeline_config.artifact_dir,
-            training_pipeline.DATA_VALIDATION_DIR_NAME
+            training_pipeline.DATA_VALIDATION_DIR_NAME,
         )
-
-        # Directories for valid and invalid data
         self.valid_data_dir: str = os.path.join(
             self.data_validation_dir,
-            training_pipeline.DATA_VALIDATION_VALID_DIR
+            training_pipeline.DATA_VALIDATION_VALID_DIR,
         )
         self.invalid_data_dir: str = os.path.join(
             self.data_validation_dir,
-            training_pipeline.DATA_VALIDATION_INVALID_DIR
+            training_pipeline.DATA_VALIDATION_INVALID_DIR,
         )
-
-        # Valid dataset file paths
         self.valid_train_file_path: str = os.path.join(
             self.valid_data_dir,
-            training_pipeline.TRAIN_FILE_NAME
+            training_pipeline.TRAIN_FILE_NAME,
         )
         self.valid_test_file_path: str = os.path.join(
             self.valid_data_dir,
-            training_pipeline.TEST_FILE_NAME
+            training_pipeline.TEST_FILE_NAME,
         )
-
-        # Invalid dataset file paths
         self.invalid_train_file_path: str = os.path.join(
             self.invalid_data_dir,
-            training_pipeline.TRAIN_FILE_NAME
+            training_pipeline.TRAIN_FILE_NAME,
         )
         self.invalid_test_file_path: str = os.path.join(
             self.invalid_data_dir,
-            training_pipeline.TEST_FILE_NAME
+            training_pipeline.TEST_FILE_NAME,
         )
-
-        # Data drift report path
         self.drift_report_file_path: str = os.path.join(
             self.data_validation_dir,
             training_pipeline.DATA_VALIDATION_DRIFT_REPORT_DIR,
-            training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME
+            training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME,
         )
 
 
-# ================================
-# ⚙️ Data Transformation Configuration
-# ================================
 class DataTransformationConfig:
-    """
-    Configuration for Data Transformation stage.
-
-    Responsibilities:
-    - Define directories for transformed datasets and preprocessing objects.
-    - Ensure proper file naming and directory structure.
-
-    Attributes:
-    ----------
-    data_transformation_dir : str
-        Root directory for transformation artifacts.
-    transformed_train_file_path : str
-        Path to save transformed training dataset (.npy format).
-    transformed_test_file_path : str
-        Path to save transformed testing dataset (.npy format).
-    transformed_object_file_path : str
-        Path to save preprocessing object (scaler/encoder/etc.).
-    """
-
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
         self.data_transformation_dir: str = os.path.join(
             training_pipeline_config.artifact_dir,
-            training_pipeline.DATA_TRANSFORMATION_DIR_NAME
+            training_pipeline.DATA_TRANSFORMATION_DIR_NAME,
         )
         self.transformed_train_file_path: str = os.path.join(
             self.data_transformation_dir,
             training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR,
-            training_pipeline.TRAIN_FILE_NAME.replace("csv", "npy")
+            training_pipeline.TRAIN_FILE_NAME.replace("csv", "npy"),
         )
         self.transformed_test_file_path: str = os.path.join(
             self.data_transformation_dir,
             training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR,
-            training_pipeline.TEST_FILE_NAME.replace("csv", "npy")
+            training_pipeline.TEST_FILE_NAME.replace("csv", "npy"),
         )
         self.transformed_object_file_path: str = os.path.join(
             self.data_transformation_dir,
             training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR,
-            training_pipeline.PREPROCESSING_OBJECT_FILE_NAME
+            training_pipeline.PREPROCESSING_OBJECT_FILE_NAME,
         )
 
 
-# ================================
-# ⚙️ Model Trainer Configuration
-# ================================
 class ModelTrainerConfig:
-    """
-    Configuration for the Model Training stage.
-
-    Responsibilities:
-    - Define directory paths for saving trained models.
-    - Set expected accuracy and overfitting/underfitting thresholds.
-
-    Attributes:
-    ----------
-    model_trainer_dir : str
-        Root folder for model training artifacts.
-    trained_model_file_path : str
-        Path to save the trained model.
-    expected_accuracy : float
-        Minimum acceptable model accuracy for deployment.
-    overfitting_underfitting_threshold : float
-        Maximum allowed deviation between training and testing accuracy.
-    """
-
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
         self.model_trainer_dir: str = os.path.join(
             training_pipeline_config.artifact_dir,
-            training_pipeline.MODEL_TRAINER_DIR_NAME
+            training_pipeline.MODEL_TRAINER_DIR_NAME,
         )
         self.trained_model_file_path: str = os.path.join(
             self.model_trainer_dir,
             training_pipeline.MODEL_TRAINER_TRAINED_MODEL_DIR,
-            training_pipeline.MODEL_TRAINER_TRAINED_MODEL_NAME
+            training_pipeline.MODEL_TRAINER_TRAINED_MODEL_NAME,
         )
         self.expected_accuracy: float = training_pipeline.MODEL_TRAINER_EXPECTED_SCORE
-        self.overfitting_underfitting_threshold: float = training_pipeline.MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD
-
-
+        self.overfitting_underfitting_threshold: float = (
+            training_pipeline.MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD
+        )

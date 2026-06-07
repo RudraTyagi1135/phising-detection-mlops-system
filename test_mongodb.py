@@ -1,14 +1,6 @@
+from network_security.db.mongodb import check_mongodb_health
 
-from pymongo.mongo_client import MongoClient
 
-uri = "mongodb+srv://rudratyagi777_db_user:Admin123@cluster0.vqvacfr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-# Create a new client and connect to the server
-client = MongoClient(uri)
-
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+def test_mongodb_health_check_is_safe_without_required_uri():
+    health = check_mongodb_health(required=False)
+    assert "status" in health

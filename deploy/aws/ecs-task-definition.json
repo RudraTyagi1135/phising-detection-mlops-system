@@ -1,0 +1,33 @@
+{
+  "family": "phishing-detection-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "REPLACED_BY_GITHUB_ACTIONS",
+  "taskRoleArn": "REPLACED_BY_GITHUB_ACTIONS",
+  "containerDefinitions": [
+    {
+      "name": "phishing-detection-api",
+      "image": "REPLACED_BY_GITHUB_ACTIONS",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [],
+      "secrets": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/phishing-detection-api",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

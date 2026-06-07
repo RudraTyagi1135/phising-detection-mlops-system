@@ -1,35 +1,34 @@
-# -------------------------------
-# Core Dependencies for ML/MLOps
-# -------------------------------
+# Runtime
+python-dotenv>=1.0,<2
+PyYAML>=6.0,<7
+pandas>=2.1,<3
+numpy>=1.24,<2
+scipy>=1.10,<2
+certifi>=2024.2.2
+pymongo[srv]>=4.6,<5
 
-# Manage environment variables securely (API keys, DB creds, etc.)
-python-dotenv    
+# Machine learning
+scikit-learn>=1.4,<2
+xgboost>=2.0,<4
+dill>=0.3.8,<1
+joblib>=1.3,<2
 
-# Data wrangling & preprocessing
-pandas           
-numpy            
+# MLOps
+mlflow>=2.12,<4
+dagshub>=0.3.28,<1
+dvc>=3.50,<4
+dvc-http>=2.32,<3
 
-# MongoDB client (for storing data, logs, or model metadata)
-pymongo          
-certifi           # SSL certificates for secure MongoDB connections
-pymongo[srv]      # Enables MongoDB+SRV protocol for cloud clusters (Atlas, etc.)
+# API
+fastapi>=0.110,<1
+uvicorn[standard]>=0.29,<1
+python-multipart>=0.0.9,<1
+jinja2>=3.1,<4
 
-# Machine Learning
-scikit-learn      # Training classical ML models, preprocessing, metrics
+# AWS deployment helpers
+boto3>=1.34,<2
 
-# MLOps Tools
-mlflow            # Experiment tracking, model registry, deployment
-pyaml             # YAML parser for configs (e.g., pipeline configs, advice engine)
-dagshub           # Versioning & experiment tracking (DVC + MLflow integration)
-
-# API Layer (serving ML models via REST APIs)
-fastapi           # High-performance API framework (async, production-ready)
-uvicorn           # ASGI server to run FastAPI apps
-python-multipart  # Support file uploads in FastAPI (e.g., CSV, Excel, PDFs)
-
-# Serialization
-dill              # For saving Python objects (models, pipelines) more flexibly than pickle
-
-# Local Project Setup
-#-e .              # Editable mode (installs your package from the current directory)
-                  # Useful when you structure your code as a Python package
+# Quality and tests
+pytest>=8.0,<9
+httpx>=0.27,<1
+ruff>=0.4,<1

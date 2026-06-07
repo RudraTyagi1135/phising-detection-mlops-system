@@ -1,129 +1,66 @@
-# ================================
-# 📦 Basic Imports
-# ================================
-import os      # For path operations
-import sys     # For system-level operations (traceback, etc.)
-import numpy as np   # Numerical operations (preprocessing, ML tasks)
-import pandas as pd  # Data manipulation & CSV handling
+import os
+
+import numpy as np
+
+from network_security.config.settings import get_settings
 
 
-# ================================
-# 🎯 Common Constants for Training Pipeline
-# ================================
-"""
-These constants are shared across the entire ML pipeline.
-"""
+settings = get_settings()
 
-# Column to be predicted by the ML model
-TARGET_COLUMN: str = "Result"
+TARGET_COLUMN: str = settings.data.target_column
+PIPELINE_NAME: str = settings.training.pipeline_name
+ARTIFACT_DIR: str = str(settings.paths.artifact_dir)
 
-# ML pipeline/project name (used in logs, artifact folders, S3 paths)
-PIPELINE_NAME: str = "NetworkSecurity"
+FILE_NAME: str = settings.data.file_name
+TRAIN_FILE_NAME: str = settings.data.train_file_name
+TEST_FILE_NAME: str = settings.data.test_file_name
+SCHEMA_FILE_PATH: str = str(settings.paths.schema_file_path)
 
-# Root folder for all pipeline artifacts (data, models, logs, reports)
-ARTIFACT_DIR: str = "Artifacts"
+SAVED_MODEL_DIR: str = str(settings.paths.saved_model_dir)
+FINAL_MODEL_DIR: str = str(settings.paths.final_model_dir)
+MODEL_FILE_NAME: str = settings.training.model_file_name
+PREPROCESSOR_FILE_NAME: str = settings.training.preprocessor_file_name
 
-# Raw dataset filename
-FILE_NAME: str = "phisingData.csv"
+DATA_INGESTION_COLLECTION_NAME: str = settings.mongodb.collection_name
+DATA_INGESTION_DATABASE_NAME: str = settings.mongodb.database_name
+DATA_INGESTION_SOURCE: str = settings.data.ingestion_source
+DATA_INGESTION_LOCAL_DATA_FILE_PATH: str = str(settings.paths.local_dataset_path)
 
-# Output filenames for train/test splits
-TRAIN_FILE_NAME: str = "train.csv"
-TEST_FILE_NAME: str = "test.csv"
-
-# Path to the YAML schema file defining the dataset structure
-SCHEMA_FILE_PATH: str = os.path.join("data_schema", "schema.yaml")
-
-SAVED_MODEL_DIR = os.path.join("saved_models")
-MODEL_FILE_NAME = "model.pkl"
-
-
-
-# ================================
-# 💾 Data Ingestion Related Constants
-# ================================
-"""
-Constants specific to the Data Ingestion stage.
-"""
-
-# MongoDB configuration
-DATA_INGESTION_COLLECTION_NAME: str = "Network_data"
-DATA_INGESTION_DATABASE_NAME: str = "RUDRA1"
-
-# Folder structure within artifacts for data ingestion
 DATA_INGESTION_DIR_NAME: str = "data_ingestion"
-DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"  # Raw snapshot of dataset
-DATA_INGESTION_INGESTED_DIR: str = "ingested"           # Split train/test datasets
+DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
+DATA_INGESTION_INGESTED_DIR: str = "ingested"
+DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO: float = settings.data.train_test_split_ratio
+DATA_INGESTION_RANDOM_STATE: int = settings.data.random_state
 
-# Train/Test split ratio
-DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO: float = 0.2  # 20% test, 80% train
-
-
-# ================================
-# 💾 Data Validation Related Constants
-# ================================
-"""
-Constants specific to Data Validation stage.
-"""
-
-# Folder structure for data validation artifacts
 DATA_VALIDATION_DIR_NAME: str = "data_validation"
-DATA_VALIDATION_VALID_DIR: str = "validated"         # Valid data
-DATA_VALIDATION_INVALID_DIR: str = "invalid"         # Invalid/rejected data
-DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_store"  # Data drift reports
-
-# Filename for the data drift report
+DATA_VALIDATION_VALID_DIR: str = "validated"
+DATA_VALIDATION_INVALID_DIR: str = "invalid"
+DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_store"
 DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "report.yaml"
 
-
-# ================================
-# 💾 Data Transformation Related Constants
-# ================================
-"""
-Constants specific to Data Transformation stage.
-"""
-
-# Folder structure for transformation artifacts
 DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
-DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR: str = "transformed"          # Transformed datasets (.npy)
-DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = "transformed_object" # Preprocessing objects (scalers, encoders, etc.)
-
-# Imputer parameters for missing values
+DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR: str = "transformed"
+DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR: str = "transformed_object"
 DATA_TRANSFORMATION_IMPUTER_PARAMS: dict = {
     "missing_values": np.nan,
     "n_neighbors": 3,
     "weights": "uniform",
 }
-
-# File paths for transformed train/test numpy arrays
 DATA_TRANSFORMATION_TRAIN_FILE_PATH: str = "train.npy"
 DATA_TRANSFORMATION_TEST_FILE_PATH: str = "test.npy"
+PREPROCESSING_OBJECT_FILE_NAME: str = settings.training.preprocessor_file_name
 
-PREPROCESSING_OBJECT_FILE_NAME = "preprocessing.pkl"
-
-
-# ================================
-# 🤖 Model Trainer Related Constants
-# ================================
-"""
-Constants specific to the Model Training stage.
-"""
-
-# Folder structure for model trainer artifacts
 MODEL_TRAINER_DIR_NAME: str = "model_trainer"
 MODEL_TRAINER_TRAINED_MODEL_DIR: str = "trained_model"
-MODEL_TRAINER_TRAINED_MODEL_NAME: str = "model.pkl"
+MODEL_TRAINER_TRAINED_MODEL_NAME: str = settings.training.model_file_name
+MODEL_TRAINER_EXPECTED_SCORE: float = settings.training.expected_score
+MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD: float = (
+    settings.training.overfitting_underfitting_threshold
+)
 
-# Model performance expectations
-MODEL_TRAINER_EXPECTED_SCORE: float = 0.6  # Minimum accuracy threshold
-MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD: float = 0.05  # Max acceptable train/test deviation
+FINAL_MODEL_FILE_PATH: str = os.path.join(FINAL_MODEL_DIR, MODEL_FILE_NAME)
+FINAL_PREPROCESSOR_FILE_PATH: str = os.path.join(FINAL_MODEL_DIR, PREPROCESSOR_FILE_NAME)
 
-
-# ================================
-# ☁️ Cloud / Deployment Related Constants
-# ================================
-"""
-Constants for cloud storage and deployment.
-"""
-
-# S3 bucket name for storing artifacts and trained models
-TRAINING_BUCKET_NAME: str = "networksecurity1135"
+# S3 is intentionally not used for ML artifact storage. The value remains for legacy
+# cloud helpers only; model and dataset artifacts are versioned through DVC + DagsHub.
+TRAINING_BUCKET_NAME: str = os.getenv("TRAINING_BUCKET_NAME", "")

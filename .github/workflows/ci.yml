@@ -1,0 +1,74 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  APP_ENV: testing
+  CONFIG_PATH: config.yaml
+  DATA_INGESTION_SOURCE: local
+
+jobs:
+  validate:
+    name: Validate, test, and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Lint critical Python errors
+        run: ruff check .
+
+      - name: Validate project configuration
+        run: python scripts/validate_project.py
+
+      - name: Validate DVC metadata
+        run: |
+          python scripts/check_dvc_setup.py
+          dvc status
+
+      - name: Validate CI secrets contract
+        run: python scripts/validate_secrets.py --mode ci
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Build Docker image
+        run: docker build -t phishing-detection-api:ci .
+
+      - name: Verify Docker image health
+        run: |
+          docker run -d --name phishing-detection-api-ci -p 8000:8000 phishing-detection-api:ci
+          for i in {1..20}; do
+            if curl -fsS http://localhost:8000/health; then
+              docker rm -f phishing-detection-api-ci
+              exit 0
+            fi
+            sleep 3
+          done
+          docker logs phishing-detection-api-ci
+          docker rm -f phishing-detection-api-ci
+          exit 1

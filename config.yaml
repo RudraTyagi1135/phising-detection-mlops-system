@@ -1,0 +1,69 @@
+app:
+  name: phishing-detection-mlops-system
+  environment: development
+  training_endpoint_enabled: true
+  api:
+    host: 0.0.0.0
+    port: 8000
+    cors_origins:
+      - "*"
+
+paths:
+  artifact_dir: Artifacts
+  final_model_dir: final_model
+  saved_model_dir: saved_models
+  prediction_output_dir: prediction_output
+  prediction_output_file_name: output.csv
+  templates_dir: templates
+  schema_file_path: data_schema/schema.yaml
+  local_dataset_path: network_data/phisingData.csv
+  log_dir: logs
+
+data:
+  target_column: Result
+  file_name: phisingData.csv
+  train_file_name: train.csv
+  test_file_name: test.csv
+  ingestion_source: local
+  train_test_split_ratio: 0.2
+  random_state: 42
+
+pipeline:
+  name: NetworkSecurity
+
+mongodb:
+  database_name: RUDRA1
+  collection_name: Network_data
+  prediction_log_collection_name: prediction_logs
+  max_pool_size: 50
+  server_selection_timeout_ms: 10000
+  connect_timeout_ms: 10000
+  socket_timeout_ms: 10000
+  retry_attempts: 3
+  retry_sleep_seconds: 2
+
+training:
+  expected_score: 0.6
+  overfitting_underfitting_threshold: 0.05
+  model_file_name: model.pkl
+  preprocessor_file_name: preprocessor.pkl
+  scoring_metric: f1
+
+mlflow:
+  experiment_name: phishing-detection
+  tracking_uri: ""
+  registered_model_name: phishing-detection-model
+  log_model: true
+
+dagshub:
+  enabled: true
+  repo_owner: ""
+  repo_name: ""
+
+dvc:
+  remote_name: dagshub
+  remote_url: ""
+
+aws:
+  region: us-east-1
+  ecr_repository_name: phishing-detection-api
