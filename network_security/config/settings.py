@@ -238,6 +238,9 @@ def get_settings() -> Settings:
             _get(config, "paths.prediction_output_file_name", "output.csv")
         ),
         templates_dir=_resolve_path(_get(config, "paths.templates_dir", "templates")),
+        static_dir=_resolve_path(
+        _get(config, "paths.static_dir", "frontend/static")
+        ),
         schema_file_path=_resolve_path(_get(config, "paths.schema_file_path", "data_schema/schema.yaml")),
         local_dataset_path=_resolve_path(
             _env("LOCAL_DATA_FILE_PATH", _get(config, "paths.local_dataset_path", "network_data/phisingData.csv"))
