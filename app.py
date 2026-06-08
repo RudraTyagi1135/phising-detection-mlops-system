@@ -145,6 +145,27 @@ async def download_results():
         filename="prediction_results.csv",
     )
 
+if __name__ == "__main__":
+ local_host = (
+ "localhost"
+ if settings.app.api.host == "0.0.0.0"
+ else settings.app.api.host
+)
+
+
+ print(
+    "\n" + "=" * 60 +
+    f"\nApplication URL: http://{local_host}:{settings.app.api.port}" +
+    "\n" + "=" * 60
+ )
+
+ app_run(
+    app,
+    host=settings.app.api.host,
+    port=settings.app.api.port,
+ )
+
+
 
 if __name__ == "__main__":
     app_run(app, host=settings.app.api.host, port=settings.app.api.port)
