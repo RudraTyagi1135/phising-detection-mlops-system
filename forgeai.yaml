@@ -1,0 +1,19 @@
+forgeai:
+  version: "1"
+
+project:
+  language: python
+  framework: fastapi
+
+dependencies:
+  manager: pip
+  manifests:
+    - requirements.txt
+
+testing:
+  framework: pytest
+  test_paths:
+    - tests/
+
+repair:
+  enabled: true
